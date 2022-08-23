@@ -69,7 +69,7 @@ export type Options<T> = {[K in keyof T] : T[K] extends {value: infer U, schema:
  * @typeParam T - The type of the element of an {@link Options}
  * @remarks As stated by its name this is explicitly used for type coercion
  */
-type CoercedSchemaOption<T> = T extends SchemaWithValue<infer U> ? SchemaWithValue<U> : never;
+export type CoercedSchemaOption<T> = T extends SchemaWithValue<infer U> ? SchemaWithValue<U> : never;
 
 /**
  * Used to extract the type of a schema from a {@link SchemaFunction}
@@ -77,7 +77,7 @@ type CoercedSchemaOption<T> = T extends SchemaWithValue<infer U> ? SchemaWithVal
  * @typeParam U - The type to compare against the schema
  * @Remarks Ued to unwrap the value type from a {@link SchemaFunction}
  */
-type UnwrappedValueFromSchema<T> = T extends SchemaFunction<infer U> ? U : never;
+export type UnwrappedValueFromSchema<T> = T extends SchemaFunction<infer U> ? U : never;
 /*End Typing*/
 
 /**
