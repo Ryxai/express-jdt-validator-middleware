@@ -1,73 +1,97 @@
 import {test} from "tap";
-import {JTDSchemaType} from "ajv/dist/jtd";
-import axios from "axios";
-import express,{ErrorRequestHandler} from "express";
-import {Validator, Options} from "../src";
-import {AddressInfo} from "net";
+import express from "express";
+const sget = require("simple-get").concat;
+import {Validator, Options, SchemaWithValue} from '../src';
+import Ajv,{JTDSchemaType} from "ajv/dist/jtd";
 
-test("Validator#Validate schemas both fixed and dynamic", async t => {
+
+test("Express app route using Validator#Integrate validation of middleware", async t => {
+  const app = express();
+  app.use(express.json());
+  const { validate } = new Validator({}, true);
   interface BareUser{
     firstName: string;
     lastName: string;
   }
-  class User implements BareUser{
+  class User implements BareUser {
     firstName: string;
     lastName: string;
+
     constructor(_firstName: string, _lastName: string) {
       this.firstName = _firstName;
       this.lastName = _lastName;
     }
   }
-
-  const {validate } = new Validator({});
-  const server = express();
   const schema = {
     body: {
-      value : new User("First","Last") as BareUser,
+      value: new User("First", "Last"),
       schema: {
         properties: {
           firstName: {type: "string"},
           lastName: {type: "string"}
         }
-      } as JTDSchemaType<BareUser>
+      } as JTDSchemaType<User>
     }
   };
-  const badRequestBody = {
-    firsName: "Aleister",
+  const badRequest = {
+    firstName: "Aleister",
     lastName: "Crowley",
     additional_bypass: "Mischief Maker"
   };
-  const goodRequest = {
+  const goodRequest : BareUser = {
     firstName: "Kyle",
     lastName: "Katarn"
   }
   const options : Options<typeof schema> = schema;
-  server.post("/",validate(options), (_, res) => {
-    res.json({success: true});
+
+
+  app.post("/user", validate(options), (request, response) => {
+    response.json({ success: true });
   });
-  server.use(((error,req,res,_) => {res.send(400).json(error)}) as ErrorRequestHandler);
+
+  app.use(function errorHandlerMiddleware(error: any, request: any , response: any, next: any) {
+    response.status(400).json(error);
+  });
+
   t.before(() => {
-    return new Promise<void>((resolve, _) => {
-      const httpServer = server.listen(0, () => {
+    return new Promise<void>((resolve, reject) => {
+      const httpServer = app.listen(0, () => {
         t.context.httpServer = httpServer;
-        t.context.rootUrl = `http://127.0.0.1:${(httpServer.address() as AddressInfo).port}`;
+        //@ts-ignore
+        t.context.rootUrl = `http://127.0.0.1:${httpServer.address().port}`;
         resolve();
       });
-    })
-  });
-  t.teardown(() => t.context.httpServer.close());
-  t.test("Should send an error response when request body is invalid", t => {
-    t.plan(3);
-    axios.post(t.context.rootUrl, badRequestBody).catch((error) => {
-      t.error(error);
-      t.equal(error.response.status,400);
     });
   });
-  t.test("Should send an error response when request body is invalid", t => {
+
+  t.teardown(() => t.context.httpServer.close());
+
+  t.test("should send an error response when request body is invalid", t => {
     t.plan(3);
-    axios.post(t.context.rootUrl, goodRequest).then((resp) => {
-      t.equal(resp.status,200);
-      t.same(resp.data, {success: true});
+
+    sget({
+      url: t.context.rootUrl + "/user",
+      method: "POST",
+      body: badRequest,
+      json: true
+    }, (error: any, response: any, body: any) => {
+      t.error(error);
+      t.equal(response.statusCode, 400);
+      t.match(body, { name: "JTDSchemaParsingError" });
+    });
+  });
+
+  t.test("should send a success response when request body is valid", t => {
+
+    sget({
+      url: t.context.rootUrl + "/user",
+      method: "POST",
+      body: goodRequest,
+      json: true
+    }, (error: any, response: any, body: any) => {
+      t.error(error);
+      t.equal(response.statusCode, 200);
+      t.same(body, { success: true });
     });
   });
 });

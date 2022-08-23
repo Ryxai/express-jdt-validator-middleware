@@ -5,6 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "test": "tap --ts --debug",
+    "test-validator": "tap --ts --debug --invert --grep=Integrate",
+    "test-integration": "tap --ts --deub --grep=Integrate",
+    "test-debugger": "tap --ts --debug --no-timeout",
+    "test-debugger-validator": "tap --ts --debug --timeout=0 --invert --grep=Integrate",
+    "test-debugger-integration": "tap --ts --debug --no-timeout --grep=Integrate",
     "lint": "eslint \"src/*.ts\""
   },
   "repository": {
@@ -28,15 +33,24 @@
   "homepage": "https://github.com/Ryxai/express=jdt-validator-middleware#readme",
   "dependencies": {
     "@types/express": "^4.17.13",
-    "ajv": "^8.11.0"
+    "ajv": "^8.11.0",
+    "body-parser": "^1.20.0",
+    "libtap": "^1.4.0",
+    "simple-get": "^4.0.1"
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.19.5",
+    "@microsoft/api-extractor-model": "^7.23.1",
     "@types/node": "^17.0.33",
     "@types/tap": "^15.0.7",
     "axios": "^0.27.2",
     "express": "^4.18.1",
-    "tap": "^16.2.0",
+    "source-map-support": "^0.5.21",
+    "tap": "^16.3.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4"
+  },
+  "tap": {
+    "check-coverage": false
   }
 }
