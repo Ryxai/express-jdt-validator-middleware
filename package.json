@@ -1,6 +1,6 @@
 {
   "name": "express-jdt-validator-middleware",
-  "version": "1.0.0.rc",
+  "version": "1.0.1",
   "description": "Express middleware for validating against JTD schema. A typescript package.",
   "main": "dist/index.js",
   "scripts": {
