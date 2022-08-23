@@ -1,6 +1,6 @@
 {
   "name": "express-jdt-validator-middleware",
-  "version": "1.0.0",
+  "version": "1.0.0.rc",
   "description": "Express middleware for validating against JTD schema. A typescript package.",
   "main": "dist/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Ryxai/express=jdt-validator-middleware.git"
+    "url": "https://github.com/Ryxai/express-jdt-validator-middleware.git"
   },
   "keywords": [
     "express",
