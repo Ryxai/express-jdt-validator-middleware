@@ -176,43 +176,30 @@ export class Validator {
       let parsingErrors : {[key: string]: string} = {};
       //Cycling through thr request property names
       for (let {requestProperty, isFunctionSchema, schema, value} of cachedParserList) {
-        try {
-          //Required to appease the typescript compiler, throws an error if the property is not defined
-          if (!req[requestProperty as keyof Request]) {
-            throw TypeError(`Error defining property ${requestProperty} for the request object, does not exist`);
-          }
-          //Getting the schema, getting the results of the dynamic schema from the reuqest if its a function
-          let parser : JTDParser<typeof value>;
-          if (isFunctionSchema) {
-            const retrievedSchema = (schema as SchemaFunction<typeof value>)(req);
-            parser = this.ajv.compileParser(retrievedSchema);
-          }
-          else {
-            parser = schema;
-          }
-          //Parsing the request property
-          //Checking if it has been preparsed
-          const reqPropNormalized = this.isPreparsed ? JSON.stringify(req[requestProperty as keyof Request]) : req[requestProperty as keyof Request];
-          const valid = parser(reqPropNormalized);
-          //If a failure, adding the parsing errors to the list of errprs
-          if (!valid) {
-            parsingErrors[requestProperty] = parser!.position! + parser!.message!;
-          }
-          //If a success, adding the value to the request.parsed object
-          else {
-            //If the request.parsed undefined creating it
-            if (!req.parsed)
-              req.parsed = {};
-            req.parsed[requestProperty] = valid;
-          }
+        //Required to appease the typescript compiler, throws an error if the property is not defined
+        //Getting the schema, getting the results of the dynamic schema from the reuqest if its a function
+        let parser : JTDParser<typeof value>;
+        if (isFunctionSchema) {
+          const retrievedSchema = (schema as SchemaFunction<typeof value>)(req);
+          parser = this.ajv.compileParser(retrievedSchema);
         }
-        //Catching the above type error thrown by not having a property adding it to the parsing errors
-        //Otherwise rethrowing the error
-        catch (e: any) {
-          if (e instanceof TypeError)
-            parsingErrors[requestProperty] = e.message;
-          else
-            throw e;
+        else {
+          parser = schema;
+        }
+        //Parsing the request property
+        //Checking if it has been preparsed
+        const reqPropNormalized = this.isPreparsed ? JSON.stringify(req[requestProperty as keyof Request]) : req[requestProperty as keyof Request];
+        const valid = parser(reqPropNormalized);
+        //If a failure, adding the parsing errors to the list of errprs
+        if (!valid) {
+          parsingErrors[requestProperty] = parser!.position! + parser!.message!;
+        }
+        //If a success, adding the value to the request.parsed object
+        else {
+          //If the request.parsed undefined creating it
+          if (!req.parsed)
+            req.parsed = {};
+          req.parsed[requestProperty] = valid;
         }
       }
       //Comopiling the parsing errors into a single parse error object and passing them to the next middleware/route

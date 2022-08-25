@@ -1,9 +1,8 @@
 import {test} from "tap";
-import Ajv,{JTDSchemaType} from "ajv/dist/jtd";
-import express from "express";
+import {JTDSchemaType} from "ajv/dist/jtd";
 import {Validator, ParsingError, Options} from "../src";
 import {Request, Response} from "express";
-import tap from "tap";
+
 
 test("Validator#Validate middleware with a schema object", async t => {
   interface EncapsulatedString {

@@ -1,9 +1,9 @@
 # express-jdt-validator-middleware
 
-An express middleware written in the style of [express-json-validator-middleware](https://github.com/simonplend/express-json-validator-middleware)
-This version is written in typescript and employs the JDT features to enable parsing of JSON schemas 
-into full Typescript objects. Further documentation to come but you should be familiar with using JTD via AJV
-first go [the AJV Typescript page](https://ajv.js.org/guide/typescript.html) and the [documentation for JDT implemented in AJV](https://ajv.js.org/json-type-definition.html) for further details about schema 
+An express middleware written in the style of and inspired by [express-json-validator-middleware](https://github.com/simonplend/express-json-validator-middleware).
+This version is written in Typescript and employs JDT features of AJV to enable parsing of JSON schemas 
+into full Typescript objects. You should be familiar with using JTD via AJV schemas
+first. For further information  go [the AJV Typescript page](https://ajv.js.org/guide/typescript.html) and the [documentation for JDT schemas for AJV](https://ajv.js.org/json-type-definition.html) for further details about schema 
 implementations. Please note that the JTD has not been completely [approved yet](https://datatracker.ietf.org/doc/rfc8927/).
 
 ## Installation
